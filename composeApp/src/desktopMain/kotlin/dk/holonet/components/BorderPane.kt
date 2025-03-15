@@ -57,7 +57,8 @@ fun BorderPane(
             }
 
             // Right Sidebar
-            Box(modifier = Modifier.fillMaxHeight().wrapContentWidth(),
+            Box(
+                modifier = Modifier.fillMaxHeight().wrapContentWidth(),
                 contentAlignment = Alignment.CenterEnd
             ) {
                 right()
