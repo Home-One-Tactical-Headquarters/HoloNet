@@ -7,6 +7,7 @@ fun main() = application {
     Window(
         onCloseRequest = ::exitApplication,
         title = "Holonet",
+        undecorated = true,
     ) {
         App()
     }
