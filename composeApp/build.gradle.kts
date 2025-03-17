@@ -1,9 +1,24 @@
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
+import com.codingfeline.buildkonfig.compiler.FieldSpec.Type.STRING
+
+val pluginsDir: File by rootProject.extra
+
+buildscript {
+    repositories {
+        mavenCentral()
+        mavenLocal()
+    }
+    dependencies {
+        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:1.9.0")
+        classpath("com.codingfeline.buildkonfig:buildkonfig-gradle-plugin:0.17.0")
+    }
+}
 
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
     alias(libs.plugins.composeMultiplatform)
     alias(libs.plugins.composeCompiler)
+    id("com.codingfeline.buildkonfig") version "+"
 }
 
 kotlin {
@@ -21,6 +36,8 @@ kotlin {
             implementation(compose.components.uiToolingPreview)
             implementation(libs.androidx.lifecycle.viewmodel)
             implementation(libs.androidx.lifecycle.runtime.compose)
+            implementation(libs.pf4j)
+            implementation(libs.holonet.core)
         }
         desktopMain.dependencies {
             implementation(compose.desktop.currentOs)
@@ -41,3 +58,15 @@ compose.desktop {
         }
     }
 }
+
+buildkonfig {
+    packageName = "dk.holonet.config"
+    // objectName = "YourAwesomeConfig"
+    // exposeObjectWithName = "YourAwesomePublicConfig"
+
+    defaultConfigs {
+        buildConfigField(STRING, "pluginsDir", pluginsDir.path)
+    }
+}
+
+
