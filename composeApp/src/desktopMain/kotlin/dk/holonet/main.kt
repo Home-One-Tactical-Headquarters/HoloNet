@@ -1,27 +1,47 @@
 package dk.holonet
 
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
 import dk.holonet.config.BuildKonfig
+import dk.holonet.configuration.ConfigurationService
 import dk.holonet.core.HoloNetModule
+import dk.holonet.core.getModulesToLoad
 import org.pf4j.DefaultPluginManager
 import java.nio.file.Paths
 
 fun main() = application {
+    val configService = ConfigurationService()
+    val isLoading = remember { mutableStateOf(true) }
+    val modules = remember { mutableStateOf<List<HoloNetModule>>(emptyList()) }
 
     val pluginsDir = BuildKonfig.pluginsDir
-    println("Plugins dir: $pluginsDir")
     val pluginManager = DefaultPluginManager(listOf(Paths.get(pluginsDir)))
 
     pluginManager.loadPlugins()
     pluginManager.startPlugins()
 
-    val modules: List<HoloNetModule> = pluginManager.getExtensions(HoloNetModule::class.java)
-    var module: HoloNetModule? = null
+    LaunchedEffect(Unit) {
+        try {
+            val configuration = configService.fetchConfiguration()
 
-    println("Loaded modules: ${modules.size}")
-    modules.forEach {
-        module = it
+            val loadedModules = pluginManager.startedPlugins
+                .filter { plugin -> configuration.getModulesToLoad().contains(plugin.pluginId) }
+                .flatMap { plugin ->
+                    pluginManager.getExtensions(HoloNetModule::class.java, plugin.pluginId).map { module ->
+                        val moduleConfig = configuration.modules[plugin.pluginId]
+                        module.configure(moduleConfig)
+                        module
+                    }
+                }
+                .toMutableList()
+
+            modules.value = loadedModules
+        } finally {
+            isLoading.value = false
+        }
     }
 
     Window(
@@ -29,6 +49,10 @@ fun main() = application {
         title = "HoloNet",
         undecorated = true,
     ) {
-        App(module!!)
+        if (isLoading.value) {
+            // Loading Screen
+        } else {
+            App(modules.value)
+        }
     }
 }

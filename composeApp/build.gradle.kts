@@ -19,6 +19,7 @@ plugins {
     alias(libs.plugins.composeMultiplatform)
     alias(libs.plugins.composeCompiler)
     id("com.codingfeline.buildkonfig") version "+"
+    kotlin("plugin.serialization") version "2.1.0"
 }
 
 kotlin {
@@ -38,6 +39,7 @@ kotlin {
             implementation(libs.androidx.lifecycle.runtime.compose)
             implementation(libs.pf4j)
             implementation(libs.holonet.core)
+            implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.8.0")
         }
         desktopMain.dependencies {
             implementation(compose.desktop.currentOs)
