@@ -40,6 +40,10 @@ kotlin {
             implementation(libs.pf4j)
             implementation(libs.holonet.core)
             implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.8.0")
+            implementation("io.insert-koin:koin-core:4.0.2")
+            implementation("io.insert-koin:koin-compose:4.0.2")
+            implementation("io.ktor:ktor-client-core:3.1.0")
+            implementation("io.ktor:ktor-client-cio:3.1.0")
         }
         desktopMain.dependencies {
             implementation(compose.desktop.currentOs)
