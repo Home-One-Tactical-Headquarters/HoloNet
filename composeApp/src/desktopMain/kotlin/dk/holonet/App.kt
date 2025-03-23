@@ -3,8 +3,8 @@ package dk.holonet
 import androidx.compose.material.Surface
 import androidx.compose.runtime.Composable
 import dk.holonet.components.BorderPane
-import dk.holonet.core.Position
 import dk.holonet.core.HoloNetModule
+import dk.holonet.core.Position
 import dk.holonet.theme.HoloNetTheme
 
 @Composable

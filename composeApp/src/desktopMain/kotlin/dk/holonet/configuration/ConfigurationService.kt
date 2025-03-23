@@ -24,17 +24,12 @@ private val testJson: String = """
 {
     "modules": {
         "clock": {
-            "position": "center",
-            "config": {
-                "key1": "Hello,",
-                "key2": "World!"
-            }
+            "position": "center"
         },
         "calendar": {
             "position": "left",
             "config": {
-                "type": "meat-and-filler",
-                "sentences": "5"
+                "url": "https://calendar.google.com/calendar/ical/2vtvf94piqaq2fkc3eju74rjjc%40group.calendar.google.com/private-7feea036760e905ce7e11ead218b804a/basic.ics"
             }
         }
     }

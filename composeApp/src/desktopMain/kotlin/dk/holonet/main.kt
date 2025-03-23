@@ -56,6 +56,7 @@ fun main() = application {
         onCloseRequest = ::exitApplication,
         title = "HoloNet",
         undecorated = true,
+//        state = rememberWindowState(placement = WindowPlacement.Fullscreen)
     ) {
         if (isLoading.value) {
             // Loading Screen

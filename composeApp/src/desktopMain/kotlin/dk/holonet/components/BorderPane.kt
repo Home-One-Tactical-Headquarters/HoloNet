@@ -42,7 +42,7 @@ fun BorderPane(
         Row(modifier = Modifier.weight(1f)) {
             // Left Sidebar
             Box(
-                modifier = Modifier.fillMaxHeight().wrapContentWidth(),
+                modifier = Modifier.fillMaxHeight().fillMaxWidth(0.25f),
                 contentAlignment = Alignment.CenterStart
             ) {
                 left()
@@ -50,7 +50,7 @@ fun BorderPane(
 
             // Center Content
             Box(
-                modifier = Modifier.weight(1f).fillMaxHeight(),
+                modifier = Modifier.fillMaxWidth(0.5f).fillMaxHeight(),
                 contentAlignment = Alignment.Center
             ) {
                 center()
@@ -58,7 +58,7 @@ fun BorderPane(
 
             // Right Sidebar
             Box(
-                modifier = Modifier.fillMaxHeight().wrapContentWidth(),
+                modifier = Modifier.fillMaxHeight().fillMaxWidth(0.25f),
                 contentAlignment = Alignment.CenterEnd
             ) {
                 right()
