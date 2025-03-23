@@ -25,9 +25,16 @@ private val testJson: String = """
     "modules": {
         "clock": {
             "position": "center",
-            "properties": {
+            "config": {
                 "key1": "Hello,",
                 "key2": "World!"
+            }
+        },
+        "calendar": {
+            "position": "left",
+            "config": {
+                "type": "meat-and-filler",
+                "sentences": "5"
             }
         }
     }
