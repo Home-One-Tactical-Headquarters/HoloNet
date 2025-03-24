@@ -3,8 +3,11 @@ package dk.holonet
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.ui.unit.DpSize
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
+import androidx.compose.ui.window.rememberWindowState
 import dk.holonet.config.BuildKonfig
 import dk.holonet.configuration.ConfigurationService
 import dk.holonet.core.HoloNetModule
@@ -56,7 +59,7 @@ fun main() = application {
         onCloseRequest = ::exitApplication,
         title = "HoloNet",
         undecorated = true,
-//        state = rememberWindowState(placement = WindowPlacement.Fullscreen)
+        state = rememberWindowState(size = DpSize(900.dp, 1520.dp))
     ) {
         if (isLoading.value) {
             // Loading Screen
