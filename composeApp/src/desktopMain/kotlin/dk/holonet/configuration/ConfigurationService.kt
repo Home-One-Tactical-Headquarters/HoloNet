@@ -9,7 +9,13 @@ import java.io.File
 class ConfigurationService {
 
     private val json = Json { ignoreUnknownKeys = true }
-    private var cachedConfig: HolonetConfiguration? = null
+    var cachedConfig: HolonetConfiguration? = null
+        private set(value) {
+            field = value
+        }
+        get() {
+            return field ?: throw IllegalStateException("Configuration not loaded")
+        }
 
     suspend fun fetchConfiguration(): HolonetConfiguration {
         return withContext(Dispatchers.IO) {
