@@ -1,20 +1,41 @@
 [versions]
 androidx-lifecycle = "2.8.4"
 compose-multiplatform = "1.7.0"
-junit = "4.13.2"
 kotlin = "2.1.0"
 kotlinx-coroutines = "1.10.1"
 jetbrains-kotlin-jvm = "2.1.0"
 pf4j = "3.6.0"
+serialization = "1.8.0"
+koin-bom = "4.0.2"
+ktor-bom = "3.1.1"
 
 [libraries]
-kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
-kotlin-test-junit = { module = "org.jetbrains.kotlin:kotlin-test-junit", version.ref = "kotlin" }
-junit = { group = "junit", name = "junit", version.ref = "junit" }
+# AndroidX
 androidx-lifecycle-viewmodel = { group = "org.jetbrains.androidx.lifecycle", name = "lifecycle-viewmodel", version.ref = "androidx-lifecycle" }
 androidx-lifecycle-runtime-compose = { group = "org.jetbrains.androidx.lifecycle", name = "lifecycle-runtime-compose", version.ref = "androidx-lifecycle" }
+
+# Coroutines
 kotlinx-coroutines-swing = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-swing", version.ref = "kotlinx-coroutines" }
+
+# PF4J
 pf4j = { group = "org.pf4j", name = "pf4j", version.ref = "pf4j" }
+
+# Serialization
+kotlinx-serialization-json = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "serialization" }
+
+# Koin
+koin-bom = { group = "io.insert-koin", name = "koin-bom", version.ref = "koin-bom" }
+koin-core = { group = "io.insert-koin", name = "koin-core"}
+koin-compose = { group = "io.insert-koin", name = "koin-compose"}
+
+# Ktor
+ktor-bom = { group = "io.ktor", name = "ktor-bom", version.ref = "ktor-bom"}
+ktor-client-core = { group = "io.ktor", name = "ktor-client-core"}
+ktor-client-cio = { group = "io.ktor", name = "ktor-client-cio"}
+ktor-server-core = { group = "io.ktor", name = "ktor-server-core"}
+ktor-server-netty = { group = "io.ktor", name = "ktor-server-netty"}
+
+# Holonet
 holonet-core = { group = "dk.holonet", name = "core", version = "0.0.1" }
 
 [plugins]
