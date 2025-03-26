@@ -12,8 +12,11 @@ import dk.holonet.config.BuildKonfig
 import dk.holonet.configuration.ConfigurationService
 import dk.holonet.core.HoloNetModule
 import dk.holonet.core.getModulesToLoad
+import dk.holonet.di.configurationModule
+import dk.holonet.di.getKoinInstance
 import dk.holonet.di.ktorModule
 import org.koin.core.context.startKoin
+import org.koin.java.KoinJavaComponent.inject
 import org.pf4j.DefaultPluginManager
 import java.nio.file.Paths
 
@@ -21,10 +24,10 @@ fun main() = application {
 
     // Start Koin and load di modules
     startKoin {
-        modules(ktorModule)
+        modules(ktorModule, configurationModule)
     }
 
-    val configService = ConfigurationService()
+    val configService: ConfigurationService = getKoinInstance()
     val isLoading = remember { mutableStateOf(true) }
     val modules = remember { mutableStateOf<List<HoloNetModule>>(emptyList()) }
 
