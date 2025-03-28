@@ -6,6 +6,7 @@ import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
 import androidx.compose.ui.window.rememberWindowState
 import dk.holonet.di.diModules
+import dk.holonet.ui.App
 import org.koin.core.context.startKoin
 
 fun main() = application {

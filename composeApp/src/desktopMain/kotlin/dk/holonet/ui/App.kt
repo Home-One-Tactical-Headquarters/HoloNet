@@ -1,4 +1,4 @@
-package dk.holonet
+package dk.holonet.ui
 
 import androidx.compose.material.Surface
 import androidx.compose.runtime.Composable

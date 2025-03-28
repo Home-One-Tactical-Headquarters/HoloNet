@@ -1,4 +1,4 @@
-package dk.holonet
+package dk.holonet.ui
 
 import dk.holonet.core.HoloNetModule
 

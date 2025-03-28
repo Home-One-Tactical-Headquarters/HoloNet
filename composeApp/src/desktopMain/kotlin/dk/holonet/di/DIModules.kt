@@ -1,6 +1,6 @@
 package dk.holonet.di
 
-import dk.holonet.AppViewModel
+import dk.holonet.ui.AppViewModel
 import dk.holonet.configuration.ConfigurationService
 import dk.holonet.configuration.PluginService
 import dk.holonet.server.ServerService

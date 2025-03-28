@@ -1,4 +1,4 @@
-package dk.holonet
+package dk.holonet.ui
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
