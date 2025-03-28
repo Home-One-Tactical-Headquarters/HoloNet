@@ -1,13 +1,11 @@
 package dk.holonet
 
-import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
 import androidx.compose.ui.window.rememberWindowState
 import dk.holonet.di.diModules
-import dk.holonet.di.getKoinInstance
 import org.koin.core.context.startKoin
 
 fun main() = application {
