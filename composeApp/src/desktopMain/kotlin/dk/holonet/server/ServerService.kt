@@ -46,7 +46,7 @@ fun Application.module(
 
     routing {
         get("/") {
-            val config: HolonetConfiguration = configurationService.cachedConfig ?: HolonetConfiguration()
+            val config: HolonetConfiguration = configurationService.cachedConfig.value ?: HolonetConfiguration()
             call.respond(config)
         }
     }

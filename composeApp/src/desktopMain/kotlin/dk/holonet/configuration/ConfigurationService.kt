@@ -2,6 +2,9 @@ package dk.holonet.configuration
 
 import dk.holonet.core.HolonetConfiguration
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.*
 import java.io.File
@@ -9,15 +12,11 @@ import java.io.File
 class ConfigurationService {
 
     private val json = Json { ignoreUnknownKeys = true }
-    var cachedConfig: HolonetConfiguration? = null
-        private set(value) {
-            field = value
-        }
-        get() {
-            return field ?: throw IllegalStateException("Configuration not loaded")
-        }
 
-    suspend fun fetchConfiguration(): HolonetConfiguration {
+    private val _cachedConfig: MutableStateFlow<HolonetConfiguration?> = MutableStateFlow(null)
+    val cachedConfig: StateFlow<HolonetConfiguration?> = _cachedConfig.asStateFlow()
+
+    suspend fun fetchConfiguration(saveConfiguration: Boolean = false): HolonetConfiguration {
         return withContext(Dispatchers.IO) {
 
             // Load configuration if it exists in user.home
@@ -31,17 +30,17 @@ class ConfigurationService {
             val config = json.decodeFromString<HolonetConfiguration>(jsonString)
 
             // Cache configuration
-            cachedConfig = config
+            _cachedConfig.emit(config)
 
-            // If configuration does not exist, write default configuration
-            if (!configExists) writeConfiguration(config)
+            // If configuration does not exist or explicitly told, write configuration
+            if (!configExists || saveConfiguration) writeConfiguration(config)
 
             // Return configuration
             config
         }
     }
 
-    suspend fun writeConfiguration(configuration: HolonetConfiguration) {
+    private suspend fun writeConfiguration(configuration: HolonetConfiguration) {
         withContext(Dispatchers.IO) {
             val file = File(System.getProperty("user.home") + "/holonet/config.json")
             file.parentFile.mkdirs()
