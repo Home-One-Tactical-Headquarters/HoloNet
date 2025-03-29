@@ -16,7 +16,7 @@ class ConfigurationService {
     private val _cachedConfig: MutableStateFlow<HolonetConfiguration?> = MutableStateFlow(null)
     val cachedConfig: StateFlow<HolonetConfiguration?> = _cachedConfig.asStateFlow()
 
-    suspend fun fetchConfiguration(saveConfiguration: Boolean = false): HolonetConfiguration {
+    suspend fun fetchConfiguration(): HolonetConfiguration {
         return withContext(Dispatchers.IO) {
 
             // Load configuration if it exists in user.home
@@ -32,8 +32,8 @@ class ConfigurationService {
             // Cache configuration
             _cachedConfig.emit(config)
 
-            // If configuration does not exist or explicitly told, write configuration
-            if (!configExists || saveConfiguration) writeConfiguration(config)
+            // If configuration does not exist, write configuration
+            if (!configExists) writeConfiguration(config)
 
             // Return configuration
             config
@@ -46,6 +46,11 @@ class ConfigurationService {
             file.parentFile.mkdirs()
             file.writeText(json.encodeToString(configuration))
         }
+    }
+
+    suspend fun updateConfiguration(newConfig: HolonetConfiguration) {
+        writeConfiguration(newConfig)
+        fetchConfiguration()
     }
 }
 
