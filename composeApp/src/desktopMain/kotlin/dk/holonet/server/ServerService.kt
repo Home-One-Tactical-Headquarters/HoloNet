@@ -2,6 +2,7 @@ package dk.holonet.server
 
 import dk.holonet.configuration.ConfigurationService
 import dk.holonet.core.HolonetConfiguration
+import io.ktor.http.HttpHeaders
 import io.ktor.serialization.kotlinx.json.json
 import io.ktor.server.application.Application
 import io.ktor.server.application.install
@@ -9,6 +10,7 @@ import io.ktor.server.engine.EmbeddedServer
 import io.ktor.server.engine.embeddedServer
 import io.ktor.server.netty.Netty
 import io.ktor.server.plugins.contentnegotiation.ContentNegotiation
+import io.ktor.server.plugins.cors.routing.CORS
 import io.ktor.server.response.respond
 import io.ktor.server.routing.get
 import io.ktor.server.routing.routing
@@ -23,7 +25,7 @@ class ServerService(
 
     suspend fun start() {
         coroutineScope {
-            server = embeddedServer(Netty, port = 8080, module = { module(configurationService) })
+            server = embeddedServer(Netty, port = 8081, module = { module(configurationService) })
             server.start(wait = true)
         }
     }
@@ -42,6 +44,13 @@ fun Application.module(
             isLenient = true
             ignoreUnknownKeys = true
         })
+    }
+
+    install(CORS) {
+        anyHost() // TODO: Replace with specific host
+        allowCredentials = true
+        allowHeaders { true }
+        allowHeader(HttpHeaders.ContentType)
     }
 
     routing {
