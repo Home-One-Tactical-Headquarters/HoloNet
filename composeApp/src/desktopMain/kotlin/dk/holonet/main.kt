@@ -1,5 +1,7 @@
 package dk.holonet
 
+import androidx.compose.ui.input.key.Key
+import androidx.compose.ui.input.key.key
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Window
@@ -23,7 +25,15 @@ fun main() = application {
         },
         title = "HoloNet",
         undecorated = true,
-        state = rememberWindowState(size = DpSize(900.dp, 1520.dp))
+        state = rememberWindowState(size = DpSize(900.dp, 1520.dp)),
+        onPreviewKeyEvent = {
+            if (it.key == Key.Q) {
+                ::exitApplication.invoke()
+                true
+            } else {
+                false
+            }
+        }
     ) {
         App()
     }
