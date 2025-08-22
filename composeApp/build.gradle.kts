@@ -64,6 +64,10 @@ kotlin {
             implementation(libs.ktor.server.cors)
             implementation(libs.ktor.serialization.kotlinx.json)
 
+            // Coil
+            implementation(libs.coil.compose)
+            implementation(libs.coil.okhttp)
+
             // Holonet Core
             implementation(libs.holonet.core)
         }

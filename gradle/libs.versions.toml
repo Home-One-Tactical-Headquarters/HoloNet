@@ -1,13 +1,14 @@
 [versions]
 androidx-lifecycle = "2.8.4"
-compose-multiplatform = "1.7.0"
-kotlin = "2.1.0"
-kotlinx-coroutines = "1.10.1"
-jetbrains-kotlin-jvm = "2.1.0"
-pf4j = "3.6.0"
+compose-multiplatform = "1.8.2"
+kotlin = "2.2.10"
+kotlinx-coroutines = "1.10.2"
+jetbrains-kotlin-jvm = "2.2.10"
+pf4j = "3.13.0"
 serialization = "1.8.0"
 koin-bom = "4.0.2"
 ktor-bom = "3.1.1"
+coil = "3.3.0"
 
 [libraries]
 # AndroidX
@@ -38,6 +39,10 @@ ktor-server-netty = { group = "io.ktor", name = "ktor-server-netty"}
 ktor-server-content-negotiation = { group = "io.ktor", name = "ktor-server-content-negotiation"}
 ktor-serialization-kotlinx-json = { group = "io.ktor", name = "ktor-serialization-kotlinx-json"}
 ktor-server-cors = { group = "io.ktor", name = "ktor-server-cors"}
+
+# Coil
+coil-compose = { group = "io.coil-kt.coil3", name = "coil-compose", version.ref = "coil" }
+coil-okhttp = { group = "io.coil-kt.coil3", name = "coil-network-okhttp", version.ref = "coil" }
 
 # Holonet
 holonet-core = { group = "dk.holonet", name = "core", version = "0.0.1" }
