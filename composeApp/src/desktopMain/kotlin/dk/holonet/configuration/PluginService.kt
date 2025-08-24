@@ -3,8 +3,11 @@ package dk.holonet.configuration
 import dk.holonet.core.HoloNetModule
 import dk.holonet.core.HolonetConfiguration
 import dk.holonet.core.getModulesToLoad
+import dk.holonet.di.getPluginsFolder
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.withContext
 import org.pf4j.BasePluginLoader
 import org.pf4j.ClassLoadingStrategy
 import org.pf4j.CompoundPluginLoader
@@ -26,8 +29,16 @@ class PluginService(
     private val _modules = MutableSharedFlow<List<HoloNetModule>>(replay = 5)
     val modules = _modules.asSharedFlow()
 
-    suspend fun initialize(pluginDirsString: String) {
-        val pluginDirs = listOf(Paths.get(pluginDirsString))
+    suspend fun initialize() {
+        val pluginDirs = listOf(Paths.get(getPluginsFolder()))
+
+        if (pluginDirs.none { Files.exists(it) }) {
+            println("Creating plugins directory at ${pluginDirs.first()}")
+            withContext(Dispatchers.IO) {
+                Files.createDirectories(pluginDirs.first())
+            }
+        }
+
         pluginManager = HolonetPluginManager(pluginDirs)
         pluginManager.loadPlugins()
         pluginManager.startPlugins()

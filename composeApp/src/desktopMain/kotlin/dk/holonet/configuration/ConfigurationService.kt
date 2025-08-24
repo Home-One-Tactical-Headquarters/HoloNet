@@ -1,6 +1,7 @@
 package dk.holonet.configuration
 
 import dk.holonet.core.HolonetConfiguration
+import dk.holonet.di.getConfig
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -20,7 +21,7 @@ class ConfigurationService {
         return withContext(Dispatchers.IO) {
 
             // Load configuration if it exists in user.home
-            val file = File(System.getProperty("user.home") + "/holonet/config.json")
+            val file = File(getConfig())
             val configExists = file.exists() && file.isFile
 
             // If configuration exists, read it. Otherwise, use default configuration
@@ -42,7 +43,7 @@ class ConfigurationService {
 
     private suspend fun writeConfiguration(configuration: HolonetConfiguration) {
         withContext(Dispatchers.IO) {
-            val file = File(System.getProperty("user.home") + "/holonet/config.json")
+            val file = File(getConfig())
             file.parentFile.mkdirs()
             file.writeText(json.encodeToString(configuration))
         }

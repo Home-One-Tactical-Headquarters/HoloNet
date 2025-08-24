@@ -8,3 +8,7 @@ inline fun <reified T> getKoinInstance(): T {
         val value: T by inject()
     }.value
 }
+
+fun getHolonetFolder(): String = System.getProperty("user.home") + "/Holonet/"
+fun getConfig(): String = getHolonetFolder() + "config.json"
+fun getPluginsFolder(): String = getHolonetFolder() + "plugins/"

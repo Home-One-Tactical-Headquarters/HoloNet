@@ -24,7 +24,7 @@ class AppViewModel(
 
     init {
         viewModelScope.launch {
-            pluginService.initialize(BuildKonfig.pluginsDir)
+            pluginService.initialize()
         }
 
         viewModelScope.launch {
