@@ -39,7 +39,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: app-${{ matrix.os }}
-          path: /${{ matrix.os == 'deb' && 'home' || matrix.os == 'dmg' && 'Users' || 'C:/Users' }}/runner/work/HoloNet/HoloNet/composeApp/build/compose/binaries/main/${{ matrix.os }}/*
+          path: ${{ matrix.os == 'deb' && 'composeApp/build/compose/binaries/main/deb' || matrix.os == 'dmg' && 'composeApp/build/compose/binaries/main/dmg' || 'composeApp/build/compose/binaries/main/msi' }}/*
 
   release:
     runs-on: ubuntu-latest
