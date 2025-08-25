@@ -33,9 +33,9 @@ class AppViewModel(
             }
         }
 
-        serverJob = viewModelScope.launch(Dispatchers.IO) {
+        /*serverJob = viewModelScope.launch(Dispatchers.IO) {
             serverService.start()
-        }
+        }*/
     }
 
     fun stopServer() {
