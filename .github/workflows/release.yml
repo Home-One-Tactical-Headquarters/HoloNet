@@ -15,7 +15,7 @@ jobs:
     runs-on: macos-latest
     strategy:
       matrix:
-        os: [ubuntu-latest, macos-latest, windows-latest]
+        os: [deb, dmg, msi]
 
     steps:
       - uses: actions/checkout@v4
@@ -33,13 +33,13 @@ jobs:
         uses: gradle/actions/setup-gradle@v4
 
       - name: Build packages
-        run: ./gradlew packageDistributionForCurrentOS
+        run: ./gradlew package${{ matrix.os == 'deb' && 'Deb' || matrix.os == 'dmg' && 'Dmg' || 'Msi' }}
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
           name: app-${{ matrix.os }}
-          path: /Users/runner/work/HoloNet/HoloNet/composeApp/build/compose/binaries/main/*/*
+          path: /Users/runner/work/HoloNet/HoloNet/composeApp/build/compose/binaries/main/${{ matrix.os }}/*
 
   release:
     runs-on: ubuntu-latest

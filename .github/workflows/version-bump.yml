@@ -61,6 +61,6 @@ jobs:
       contents: write
     uses: Home-One-Tactical-Headquarters/HoloNet/.github/workflows/release.yml@main
     with:
-        tag: v${{ needs.reckon.outputs.version }}
+        tag: "v${{ needs.reckon.outputs.version }}"
     secrets:
         token: ${{ secrets.GITHUB_TOKEN }}
