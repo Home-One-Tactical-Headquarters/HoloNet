@@ -16,6 +16,9 @@ jobs:
         with:
             fetch-depth: 0 # Fetch all history for all tags and branches
 
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v4
+
       - name: Get PR labels
         id: labels
         uses: actions-ecosystem/action-get-merged-pull-request@v1
