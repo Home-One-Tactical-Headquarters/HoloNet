@@ -2,6 +2,7 @@ name: Check PR Scope Label
 
 on:
   pull_request:
+    types: [opened, synchronize, labeled]
     branches: [ main ]
 
 jobs:
