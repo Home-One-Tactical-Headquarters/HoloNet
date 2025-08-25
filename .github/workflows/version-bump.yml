@@ -7,7 +7,7 @@ on:
 
 jobs:
   version:
-    runs-on: macos-latest
+    runs-on: ubuntu-latest
     permissions:
       contents: write
       pull-requests: read
@@ -61,6 +61,6 @@ jobs:
       contents: write
     uses: Home-One-Tactical-Headquarters/HoloNet/.github/workflows/release.yml@main
     with:
-        tag: "v${{ needs.reckon.outputs.version }}"
+        tag: "v${{ needs.version.outputs.version }}"
     secrets:
         token: ${{ secrets.GITHUB_TOKEN }}
