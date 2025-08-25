@@ -83,12 +83,32 @@ compose.desktop {
     application {
         mainClass = "dk.holonet.MainKt"
 
-        val version = project.version.toString().removeSuffix("-SNAPSHOT")
+        // If project.version contains beta or rc it will be treated as a pre-release version
+        // Strip out any -beta or -rc suffixes for the version used in the installer and appended it to packageName
+        val versionParts = project.version.toString().split("-")
+        val isPreRelease = versionParts.size > 1 && (versionParts[1].startsWith("beta") || versionParts[1].startsWith("rc"))
+
+        // If less than 1.0.0, transform it to 1.x.x
+        val versionNumbers = versionParts[0].split(".").map { it.toIntOrNull() ?: 0 }
+        val versionName = if (versionNumbers.size == 3 && versionNumbers[0] < 1) {
+            "1.${versionNumbers[1]}.${versionNumbers[2]}"
+        } else {
+            versionParts[0]
+        }
+
+        // Append -beta or -rc to package name if pre-release
+        val preReleaseSuffix = if (isPreRelease) {
+            when {
+                versionParts[1].startsWith("beta") -> "-beta"
+                versionParts[1].startsWith("rc") -> "-rc"
+                else -> ""
+            }
+        } else ""
 
         nativeDistributions {
             targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
-            packageName = "HoloNet"
-            packageVersion = version
+            packageName = "HoloNet${preReleaseSuffix}"
+            packageVersion = versionName
         }
     }
 }
