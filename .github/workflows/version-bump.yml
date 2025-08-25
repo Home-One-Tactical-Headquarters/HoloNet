@@ -1,0 +1,48 @@
+name: Bump version and Tag
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  version:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+            fetch-depth: 0 # Fetch all history for all tags and branches
+
+      - name: Get PR labels
+        id: labels
+        uses: actions-ecosystem/action-get-merged-pull-request@v1
+        with:
+            github_token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Determine scope
+        id: scope
+        run: |
+            labels="${{ steps.labels.outputs.labels }}"
+                      if [[ "$labels" == *"scope:major"* ]]; then
+                        echo "scope=major" >> $GITHUB_OUTPUT
+                      elif [[ "$labels" == *"scope:minor"* ]]; then
+                        echo "scope=minor" >> $scope:GITHUB_OUTPUT
+                      elif [[ "$labels" == *"scope:patch"* ]]; then
+                        echo "scope=patch" >> $GITHUB_OUTPUT
+                      else
+                        echo "No version label found!" >&2
+                        exit 1
+                      fi
+
+      - name: Run Reckon to calculate next version
+        id: reckon
+        run: |
+          VERSION=$(./gradlew -Preckon.scope=${{ steps.scope.outputs.scope }} -Preckon.stage=final -q printVersion)
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+
+      - name: Create and push tag
+        run: |
+          git config user.name "github-actions"
+          git config user.email "actions@github.com"
+          git tag "v${{ steps.reckon.outputs.version }}"
+          git push origin "v${{ steps.reckon.outputs.version }}"

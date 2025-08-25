@@ -1,0 +1,26 @@
+name: Check PR Scope Label
+
+on:
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  check-label:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check for required scope label
+        uses: mheap/github-action-required-labels@v5
+        with:
+          mode: exactly
+          add_comment: true
+          message: |
+            A pull request must have exactly one of the following labels to indicate the scope of the changes:
+            - `scope:major` for changes that introduce breaking changes.
+            - `scope:minor` for changes that add functionality in a backwards-compatible manner.
+            - `scope:patch` for changes that are backwards-compatible bug fixes.
+            Please add one of these labels to proceed.
+          count: 1
+          labels: |
+            scope:major
+            scope:minor
+            scope:patch
