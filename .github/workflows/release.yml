@@ -12,7 +12,6 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest, macos-latest, windows-latest]
-        folder: [deb, dmg, msi]
 
     steps:
       - uses: actions/checkout@v4
@@ -36,7 +35,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: app-${{ matrix.os }}
-          path: /Users/runner/work/HoloNet/HoloNet/composeApp/build/compose/binaries/main/${{ matrix.folder }}/*
+          path: /Users/runner/work/HoloNet/HoloNet/composeApp/build/compose/binaries/main/*/*
 
   release:
     runs-on: ubuntu-latest
