@@ -12,7 +12,7 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os == 'deb' && 'ubuntu-latest' || matrix.os == 'dmg' && 'macos-latest' || 'windows-latest' }}
     strategy:
       matrix:
         os: [deb, dmg, msi]
@@ -39,7 +39,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: app-${{ matrix.os }}
-          path: /Users/runner/work/HoloNet/HoloNet/composeApp/build/compose/binaries/main/${{ matrix.os }}/*
+          path: /${{ matrix.os == 'deb' && 'home' || matrix.os == 'dmg' && 'Users' || 'Users' }}/runner/work/HoloNet/HoloNet/composeApp/build/compose/binaries/main/${{ matrix.os }}/*
 
   release:
     runs-on: ubuntu-latest
