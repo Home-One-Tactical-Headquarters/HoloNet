@@ -52,3 +52,8 @@ jobs:
           git config user.email "actions@github.com"
           git tag "v${{ steps.reckon.outputs.version }}"
           git push origin "v${{ steps.reckon.outputs.version }}"
+
+      - name: Create Release
+        uses: Home-One-Tactical-Headquarters/HoloNet/.github/workflows/release.yml@main
+        secrets:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
