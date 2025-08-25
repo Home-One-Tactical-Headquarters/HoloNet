@@ -83,10 +83,12 @@ compose.desktop {
     application {
         mainClass = "dk.holonet.MainKt"
 
+        val version = project.version.toString().removeSuffix("-SNAPSHOT")
+
         nativeDistributions {
             targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
-            packageName = "dk.holonet"
-            packageVersion = "1.0.0"
+            packageName = "HoloNet"
+            packageVersion = version
         }
     }
 }
