@@ -57,6 +57,8 @@ jobs:
 
   release:
     needs: version
+    permissions:
+      contents: write
     uses: Home-One-Tactical-Headquarters/HoloNet/.github/workflows/release.yml@main
     with:
         tag: v${{ needs.reckon.outputs.version }}
