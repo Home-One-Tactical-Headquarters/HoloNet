@@ -36,7 +36,7 @@ plugins {
 
 extensions.configure<org.ajoberstar.reckon.gradle.ReckonExtension> {
     setDefaultInferredScope("patch")
-    snapshots()
+    stages("beta", "rc", "final")
     setScopeCalc(calcScopeFromProp().or(calcScopeFromCommitMessages()))
     setStageCalc(calcStageFromProp())
 }
