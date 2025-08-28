@@ -33,11 +33,11 @@ jobs:
         run: |
             labels="${{ steps.labels.outputs.labels }}"
                       if [[ "$labels" == *"scope:major"* ]]; then
-                        echo "major" >> $GITHUB_OUTPUT
+                        echo "scope=major" >> $GITHUB_OUTPUT
                       elif [[ "$labels" == *"scope:minor"* ]]; then
-                        echo "minor" >> $GITHUB_OUTPUT
+                        echo "scope=minor" >> $GITHUB_OUTPUT
                       elif [[ "$labels" == *"scope:patch"* ]]; then
-                        echo "patch" >> $GITHUB_OUTPUT
+                        echo "scope=patch" >> $GITHUB_OUTPUT
                       else
                         echo "No version label found!" >&2
                         exit 1
