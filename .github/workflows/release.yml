@@ -15,7 +15,7 @@ on:
 
 jobs:
   build:
-    runs-on: ${{ matrix.os == 'deb' && 'ubuntu-latest' || matrix.os == 'dmg' && 'macos-latest' || 'windows-latest' }}
+    runs-on: ${{ matrix.os == 'deb' && 'ubuntu-latest' || matrix.os == 'dmg' && 'macos-latest' || 'ubuntu-latest' }}
     strategy:
       matrix:
         os: [deb, dmg, msi]
@@ -38,7 +38,7 @@ jobs:
         uses: gradle/actions/setup-gradle@v4
 
       - name: Build packages
-        run: ./gradlew "-Preckon.scope=${{ inputs.scope }}" "-Preckon.stage=final" "packageDistributionForCurrentOS"
+        run: ./gradlew -Preckon.scope=${{ inputs.scope }} -Preckon.stage=final package${{ matrix.os == 'deb' && 'Deb' || matrix.os == 'dmg' && 'Dmg' || 'Msi' }}
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
