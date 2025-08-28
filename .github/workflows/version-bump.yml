@@ -35,7 +35,7 @@ jobs:
                       if [[ "$labels" == *"scope:major"* ]]; then
                         echo "scope=major" >> $GITHUB_OUTPUT
                       elif [[ "$labels" == *"scope:minor"* ]]; then
-                        echo "scope=minor" >> $scope:GITHUB_OUTPUT
+                        echo "scope=minor" >> $GITHUB_OUTPUT
                       elif [[ "$labels" == *"scope:patch"* ]]; then
                         echo "scope=patch" >> $GITHUB_OUTPUT
                       else
