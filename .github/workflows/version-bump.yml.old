@@ -53,7 +53,7 @@ jobs:
     needs: version
     permissions:
       contents: write
-    uses: Home-One-Tactical-Headquarters/HoloNet/.github/workflows/release.yml@main
+    uses: Home-One-Tactical-Headquarters/HoloNet/.github/workflows/release.yml.old@main
     with:
       tag: ${{ needs.version.outputs.version }}
       scope: ${{ needs.version.outputs.scope }}
