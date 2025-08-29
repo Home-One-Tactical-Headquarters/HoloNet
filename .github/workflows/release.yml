@@ -1,25 +1,51 @@
 name: Release
 
 on:
-  workflow_call:
-    inputs:
-      tag:
-        required: true
-        type: string
-      scope:
-        required: true
-        type: string
-    secrets:
-        token:
-            required: true
+  push:
+    branches:
+      - main
 
 jobs:
+  scope:
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: read
+    outputs:
+      scope: ${{ steps.scope.outputs.scope }}
+    steps:
+      - name: Get PR labels
+        id: labels
+        uses: actions-ecosystem/action-get-merged-pull-request@v1
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Determine scope
+        id: scope
+        run: |
+          labels="${{ steps.labels.outputs.labels }}"
+                    if [[ "$labels" == *"scope:major"* ]]; then
+                      echo "scope=major" >> $GITHUB_OUTPUT
+                    elif [[ "$labels" == *"scope:minor"* ]]; then
+                      echo "scope=minor" >> $GITHUB_OUTPUT
+                    elif [[ "$labels" == *"scope:patch"* ]]; then
+                      echo "scope=patch" >> $GITHUB_OUTPUT
+                    else
+                      echo "No version label found!" >&2
+                      exit 1
+                    fi
+
   build:
+    needs: scope
+    permissions:
+      contents: write
     runs-on: ${{ matrix.os == 'deb' && 'ubuntu-latest' || matrix.os == 'dmg' && 'macos-latest' || 'windows-latest' }}
     strategy:
       matrix:
-        os: [deb, dmg, msi]
-
+        os: [ deb ]
+    with:
+        scope: ${{ needs.scope.outputs.scope }}
+    outputs:
+        version: ${{ steps.build.outputs.version }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -37,10 +63,13 @@ jobs:
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v4
 
-      - name: Build packages
+      - name: Build packages and push tag
+        id: build
         run: |
-          ./gradlew clean
-          ./gradlew "-Preckon.scope=${{ inputs.scope }}" "-Preckon.stage=final" package${{ matrix.os == 'deb' && 'Deb' || matrix.os == 'dmg' && 'Dmg' || 'Msi' }}
+          ./gradlew packageDistributionForCurrentOS reckonTagPush -Preckon.scope=${{ needs.scope.outputs.scope }} -Preckon.stage=final 2>&1 | tee output.file
+          reckoned_version=$(grep -o 'Reckoned version: .*' output.file | cut -d ' ' -f3)
+          echo "Reckoned Version: $reckoned_version"
+          echo "version=$reckoned_version" >> $GITHUB_OUTPUT
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
@@ -49,10 +78,12 @@ jobs:
           path: ${{ matrix.os == 'deb' && 'composeApp/build/compose/binaries/main/deb' || matrix.os == 'dmg' && 'composeApp/build/compose/binaries/main/dmg' || 'composeApp/build/compose/binaries/main/msi' }}/*
 
   release:
-    runs-on: ubuntu-latest
     needs: build
     permissions:
       contents: write
+    runs-on: ubuntu-latest
+    with:
+        tag: ${{ needs.build.outputs.version }}
     steps:
       - uses: actions/download-artifact@v4
         with:
@@ -64,4 +95,4 @@ jobs:
           generate_release_notes: true
           files: dist/**/*
         env:
-          GITHUB_TOKEN: ${{ secrets.token }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

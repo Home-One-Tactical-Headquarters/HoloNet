@@ -39,6 +39,9 @@ extensions.configure<org.ajoberstar.reckon.gradle.ReckonExtension> {
     stages("beta", "rc", "final")
     setScopeCalc(calcScopeFromProp().or(calcScopeFromCommitMessages()))
     setStageCalc(calcStageFromProp())
+    setTagWriter { version ->
+        "v$version"
+    }
 }
 
 
