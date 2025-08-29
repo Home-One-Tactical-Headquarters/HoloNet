@@ -64,8 +64,7 @@ jobs:
       - name: Build packages and push tag
         id: build
         run: |
-          ./gradlew packageDistributionForCurrentOS reckonTagPush -Preckon.scope=${{ needs.scope.outputs.scope }} -Preckon.stage=final --info 2>&1 | tee output.file
-          reckoned_version=$(grep -o 'Reckoned version: .*' output.file | cut -d ' ' -f3)
+          reckoned_version=$(./gradlew packageDistributionForCurrentOS reckonTagPush -Preckon.scope=${{ needs.scope.outputs.scope }} -Preckon.stage=final --info 2>&1 | grep -o 'Reckoned version: .*' | cut -d ' ' -f3)
           echo "Reckoned Version: $reckoned_version"
           echo "version=$reckoned_version" >> $GITHUB_OUTPUT
 
