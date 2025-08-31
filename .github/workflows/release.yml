@@ -75,6 +75,7 @@ jobs:
         shell: alpine.sh --root {0}
         run: |
           apk add --no-cache openjdk8-jdk
+          export JAVA_HOME=/usr/lib/jvm/java-8-openjdk
           version=$(./gradlew packageDistributionForCurrentOS reckonTagPush -Preckon.scope=${{ needs.scope.outputs.scope }} -Preckon.stage=final --info 2>&1 | tee /dev/stderr | grep -o 'Reckoned version: .*' | cut -d ' ' -f3)
           echo "Extracted Version: $version"
           echo "version=$version" >> $GITHUB_OUTPUT
