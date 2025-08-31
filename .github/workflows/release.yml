@@ -38,7 +38,7 @@ jobs:
     needs: scope
     permissions:
       contents: write
-    runs-on: ${{ matrix.os == 'deb' && 'ubuntu-latest' || matrix.os == 'dmg' && 'macos-latest' || matrix.os == 'deb-arm' && 'ubuntu-24.04-arm' || 'windows-latest' }}
+    runs-on: ${{ matrix.os == 'deb' && 'ubuntu-latest' || matrix.os == 'deb-arm' && 'ubuntu-latest' || matrix.os == 'dmg' && 'macos-latest' ||  'windows-latest' }}
     strategy:
       matrix:
         os: [ deb, deb-arm ]
@@ -53,6 +53,12 @@ jobs:
         if: endsWith(github.ref, 'main') == false
         run: exit -1
 
+      - name: Setup Alpine Linux for ARM
+        if: matrix.os == 'deb-arm'
+        uses: jirutka/setup-alpine@v1
+        with:
+          arch: armv7
+
       - uses: actions/setup-java@v4
         with:
           distribution: temurin
@@ -61,7 +67,18 @@ jobs:
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v4
 
+      - name: Build packages and push tag (ARM)
+        if: matrix.os == 'deb-arm'
+        id: build-arm
+        shell: alpine.sh {0}
+        run: |
+          apk add --no-cache openjdk21-jdk
+          reckoned_version=$(./gradlew packageDistributionForCurrentOS reckonTagPush -Preckon.scope=${{ needs.scope.outputs.scope }} -Preckon.stage=final --info 2>&1 | grep -o 'Reckoned version: .*' | cut -d ' ' -f3)
+          echo "Reckoned Version: $reckoned_version"
+          echo "version=$reckoned_version" >> $GITHUB_OUTPUT
+
       - name: Build packages and push tag
+        if: matrix.os != 'deb-arm'
         id: build
         run: |
           reckoned_version=$(./gradlew packageDistributionForCurrentOS reckonTagPush -Preckon.scope=${{ needs.scope.outputs.scope }} -Preckon.stage=final --info 2>&1 | grep -o 'Reckoned version: .*' | cut -d ' ' -f3)
