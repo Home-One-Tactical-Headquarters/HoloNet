@@ -64,7 +64,7 @@ jobs:
       - name: Build packages and push tag
         id: build
         run: |
-          reckoned_version=$(./gradlew packageDistributionForCurrentOS reckonTagPush -Preckon.scope=${{ needs.scope.outputs.scope }} -Preckon.stage=final --info 2>&1 | grep -o 'Reckoned version: .*' | cut -d ' ' -f3)
+          reckoned_version=$(./gradlew packageDistributionForCurrentOS reckonTagPush -Preckon.scope=${{ needs.scope.outputs.scope }} -Preckon.stage=final --info 2>&1 | tee /dev/tty | grep -o 'Reckoned version: .*' | cut -d ' ' -f3)
           echo "Reckoned Version: $reckoned_version"
           echo "version=$reckoned_version" >> $GITHUB_OUTPUT
 
@@ -72,7 +72,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: app-${{ matrix.os }}
-          path: ${{ matrix.os == 'deb' && 'composeApp/build/compose/binaries/main/deb' || matrix.os == 'deb-arm' && 'composeApp/build/compose/binaries/main/deb'|| matrix.os == 'dmg' && 'composeApp/build/compose/binaries/main/dmg' || 'composeApp/build/compose/binaries/main/msi' }}/*
+          path: ${{ matrix.os == 'deb' && 'composeApp/build/compose/binaries/main/deb' || matrix.os == 'deb-arm' && 'composeApp/build/compose/binaries/main/deb-arm'|| matrix.os == 'dmg' && 'composeApp/build/compose/binaries/main/dmg' || 'composeApp/build/compose/binaries/main/msi' }}/*
 
   release:
     needs: build
