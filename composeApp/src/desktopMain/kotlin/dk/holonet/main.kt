@@ -5,6 +5,7 @@ import androidx.compose.ui.input.key.key
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Window
+import androidx.compose.ui.window.WindowPlacement
 import androidx.compose.ui.window.application
 import androidx.compose.ui.window.rememberWindowState
 import dk.holonet.di.diModules
@@ -25,7 +26,7 @@ fun main() = application {
         },
         title = "HoloNet",
         undecorated = true,
-        state = rememberWindowState(size = DpSize(900.dp, 1520.dp)),
+        state = rememberWindowState(placement = WindowPlacement.Fullscreen),
         onPreviewKeyEvent = {
             if (it.key == Key.Q) {
                 ::exitApplication.invoke()
