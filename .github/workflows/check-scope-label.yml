@@ -22,9 +22,11 @@ jobs:
             - `scope:major` for changes that introduce breaking changes.
             - `scope:minor` for changes that add functionality in a backwards-compatible manner.
             - `scope:patch` for changes that are backwards-compatible bug fixes.
+            - `scope:no_deploy` to skip deployment entirely.
             Please add one of these labels to proceed.
           count: 1
           labels: |
             scope:major
             scope:minor
             scope:patch
+            scope:no_deploy

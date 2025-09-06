@@ -12,6 +12,7 @@ jobs:
       pull-requests: read
     outputs:
       scope: ${{ steps.scope.outputs.scope }}
+      should_deploy: ${{ steps.scope.outputs.should_deploy }}
     steps:
       - name: Get PR labels
         id: labels
@@ -23,19 +24,29 @@ jobs:
         id: scope
         run: |
           labels="${{ steps.labels.outputs.labels }}"
-                    if [[ "$labels" == *"scope:major"* ]]; then
-                      echo "scope=major" >> $GITHUB_OUTPUT
-                    elif [[ "$labels" == *"scope:minor"* ]]; then
-                      echo "scope=minor" >> $GITHUB_OUTPUT
-                    elif [[ "$labels" == *"scope:patch"* ]]; then
-                      echo "scope=patch" >> $GITHUB_OUTPUT
-                    else
-                      echo "No version label found!" >&2
-                      exit 1
-                    fi
+          
+          if [[ "$labels" == *"scope:no_deploy"* ]]; then
+            echo "No deploy label found, skipping deployment"
+            echo "should_deploy=false" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+          
+          echo "should_deploy=true" >> $GITHUB_OUTPUT
+          
+          if [[ "$labels" == *"scope:major"* ]]; then
+            echo "scope=major" >> $GITHUB_OUTPUT
+          elif [[ "$labels" == *"scope:minor"* ]]; then
+            echo "scope=minor" >> $GITHUB_OUTPUT
+          elif [[ "$labels" == *"scope:patch"* ]]; then
+            echo "scope=patch" >> $GITHUB_OUTPUT
+          else
+            echo "No version label found!" >&2
+            exit 1
+          fi
 
   build:
     needs: scope
+    if: needs.scope.outputs.should_deploy == 'true'
     permissions:
       contents: write
     runs-on: ${{ matrix.os == 'deb' && 'ubuntu-latest' || matrix.os == 'dmg' && 'macos-latest' || matrix.os == 'deb-arm' && 'ubuntu-24.04-arm' || 'windows-latest' }}
@@ -81,6 +92,7 @@ jobs:
 
   release:
     needs: build
+    if: needs.scope.outputs.should_deploy == 'true'
     permissions:
       contents: write
     runs-on: ubuntu-latest
