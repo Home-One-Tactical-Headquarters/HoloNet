@@ -4,6 +4,22 @@ on:
   push:
     branches:
       - main
+  workflow_dispatch:
+    inputs:
+      scope:
+        description: 'Version scope'
+        required: true
+        default: 'patch'
+        type: choice
+        options:
+          - major
+          - minor
+          - patch
+      should_deploy:
+        description: 'Should deploy?'
+        required: true
+        default: true
+        type: boolean
 
 jobs:
   scope:
@@ -16,6 +32,7 @@ jobs:
     steps:
       - name: Get PR labels
         id: labels
+        if: github.event_name == 'push'
         uses: actions-ecosystem/action-get-merged-pull-request@v1
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
@@ -23,16 +40,22 @@ jobs:
       - name: Determine scope
         id: scope
         run: |
+          if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
+            echo "scope=${{ github.event.inputs.scope }}" >> $GITHUB_OUTPUT
+            echo "should_deploy=${{ github.event.inputs.should_deploy }}" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+
           labels="${{ steps.labels.outputs.labels }}"
-          
+
           if [[ "$labels" == *"scope:no_deploy"* ]]; then
             echo "No deploy label found, skipping deployment"
             echo "should_deploy=false" >> $GITHUB_OUTPUT
             exit 0
           fi
-          
+
           echo "should_deploy=true" >> $GITHUB_OUTPUT
-          
+
           if [[ "$labels" == *"scope:major"* ]]; then
             echo "scope=major" >> $GITHUB_OUTPUT
           elif [[ "$labels" == *"scope:minor"* ]]; then
