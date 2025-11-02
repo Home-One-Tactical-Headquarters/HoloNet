@@ -3,10 +3,13 @@ package dk.holonet.configuration
 import dk.holonet.core.HoloNetModule
 import dk.holonet.core.HolonetConfiguration
 import dk.holonet.core.getModulesToLoad
-import dk.holonet.di.getPluginsFolder
+import dk.holonet.core.services.ConfigurationService
+import dk.holonet.core.services.getPluginsFolder
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.pf4j.BasePluginLoader
 import org.pf4j.ClassLoadingStrategy
@@ -17,14 +20,19 @@ import org.pf4j.DevelopmentPluginLoader
 import org.pf4j.PluginClassLoader
 import org.pf4j.PluginDescriptor
 import org.pf4j.PluginLoader
+import java.nio.file.FileSystems
 import java.nio.file.Files
 import java.nio.file.Path
 import java.nio.file.Paths
+import java.nio.file.StandardWatchEventKinds
+import java.nio.file.WatchKey
 
 class PluginService(
-    private val configurationService: ConfigurationService
+    private val configurationService: ConfigurationService,
+    private val coroutineScope: CoroutineScope
 ) {
     private lateinit var pluginManager: DefaultPluginManager
+    private var watchKey: WatchKey? = null
 
     private val _modules = MutableSharedFlow<List<HoloNetModule>>(replay = 5)
     val modules = _modules.asSharedFlow()
@@ -43,10 +51,55 @@ class PluginService(
         pluginManager.loadPlugins()
         pluginManager.startPlugins()
 
+        // Start watching the plugins directory
+        startWatchingPluginsFolder(pluginDirs.first())
+
         configurationService.fetchConfiguration()
         configurationService.cachedConfig.collect { config ->
+            println("Configuration updated, reloading modules: $config")
             loadModules(config)
         }
+    }
+
+    private fun startWatchingPluginsFolder(pluginsPath: Path) {
+        coroutineScope.launch(Dispatchers.IO) {
+            val watchService = FileSystems.getDefault().newWatchService()
+            watchKey = pluginsPath.register(
+                watchService,
+                StandardWatchEventKinds.ENTRY_CREATE,
+                StandardWatchEventKinds.ENTRY_MODIFY
+            )
+
+            while (true) {
+                val key = watchService.take() // Blocks until event occurs
+
+                for (event in key.pollEvents()) {
+                    val kind = event.kind()
+                    val filename = event.context() as Path
+
+                    println("Plugin directory change detected: $kind - $filename")
+
+                    if (kind == StandardWatchEventKinds.ENTRY_CREATE ||
+                        kind == StandardWatchEventKinds.ENTRY_MODIFY) {
+                        loadPluginsNow()
+                        break // Only reload once per batch of events
+                    }
+                }
+
+                if (!key.reset()) {
+                    break // Directory no longer accessible
+                }
+            }
+        }
+    }
+
+    private fun loadPluginsNow() {
+        pluginManager.loadPlugins()
+        pluginManager.startPlugins()
+    }
+
+    fun dispose() {
+        watchKey?.cancel()
     }
 
     private suspend fun loadModules(config: HolonetConfiguration?) {
