@@ -3,6 +3,7 @@ package dk.holonet.ui
 import androidx.compose.material.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dk.holonet.components.BorderPane
 import dk.holonet.core.HoloNetModule
@@ -12,12 +13,15 @@ import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun App(
-    viewModel: AppViewModel = koinViewModel()
+    viewModel: AppViewModel = koinViewModel(),
+    modifier: Modifier
 ) {
     val uiState by viewModel.state.collectAsStateWithLifecycle()
 
     HoloNetTheme {
-        Surface {
+        Surface(
+            modifier = modifier
+        ) {
             when (val state = uiState) {
                 is UiState.Loading -> {
                     // Show loading screen

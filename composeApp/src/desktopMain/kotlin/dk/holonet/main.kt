@@ -1,7 +1,10 @@
 package dk.holonet
 
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.key.Key
 import androidx.compose.ui.input.key.key
+import androidx.compose.ui.input.pointer.PointerIcon
+import androidx.compose.ui.input.pointer.pointerHoverIcon
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Window
@@ -10,6 +13,7 @@ import androidx.compose.ui.window.application
 import androidx.compose.ui.window.rememberWindowState
 import dk.holonet.di.diModules
 import dk.holonet.ui.App
+import dk.holonet.utils.createEmptyCursor
 import org.koin.core.context.startKoin
 
 fun main() = application {
@@ -21,7 +25,6 @@ fun main() = application {
 
     Window(
         onCloseRequest = {
-//            appViewModel.stopServer() // TODO: Add stop server method
             ::exitApplication.invoke()
         },
         title = "HoloNet",
@@ -36,6 +39,6 @@ fun main() = application {
             }
         }
     ) {
-        App()
+        App(modifier = Modifier.pointerHoverIcon(PointerIcon(createEmptyCursor())))
     }
 }
