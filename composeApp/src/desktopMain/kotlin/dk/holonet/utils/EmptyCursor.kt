@@ -8,7 +8,7 @@ import java.awt.image.BufferedImage
 internal fun createEmptyCursor(): Cursor {
     return Toolkit.getDefaultToolkit().createCustomCursor(
         BufferedImage(10, 10, BufferedImage.TYPE_INT_ARGB),
-        Point(0,0),
+        Point(0, 0),
         "Empty Cursor"
     )
 }
