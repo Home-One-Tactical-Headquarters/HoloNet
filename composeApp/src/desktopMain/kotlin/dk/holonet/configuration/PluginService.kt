@@ -4,6 +4,7 @@ import dk.holonet.core.HoloNetModule
 import dk.holonet.core.HolonetConfiguration
 import dk.holonet.core.getModulesToLoad
 import dk.holonet.core.services.ConfigurationService
+import dk.holonet.core.services.PluginServiceInterface
 import dk.holonet.core.services.getPluginsFolder
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -32,7 +33,7 @@ import java.nio.file.WatchKey
 class PluginService(
     private val configurationService: ConfigurationService,
     private val coroutineScope: CoroutineScope
-) {
+): PluginServiceInterface {
     private lateinit var pluginManager: DefaultPluginManager
     private var watchKey: WatchKey? = null
 
@@ -49,6 +50,8 @@ class PluginService(
             }
         }
 
+        configurationService.setPluginManager(this)
+
         pluginManager = HolonetPluginManager(pluginDirs)
         pluginManager.loadPlugins()
         pluginManager.startPlugins()
@@ -60,6 +63,12 @@ class PluginService(
         configurationService.cachedConfig.collect { config ->
             println("Configuration updated, reloading modules: $config")
             loadModules(config)
+        }
+    }
+
+    override suspend fun unloadPlugin(pluginIds: List<String>) {
+        pluginIds.forEach { pluginId ->
+            pluginManager.deletePlugin(pluginId)
         }
     }
 
