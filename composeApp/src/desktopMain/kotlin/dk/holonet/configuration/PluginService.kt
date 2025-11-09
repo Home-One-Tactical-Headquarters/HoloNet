@@ -4,6 +4,7 @@ import dk.holonet.core.HoloNetModule
 import dk.holonet.core.HolonetConfiguration
 import dk.holonet.core.getModulesToLoad
 import dk.holonet.core.services.ConfigurationService
+import dk.holonet.core.services.PluginServiceInterface
 import dk.holonet.core.services.getPluginsFolder
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -17,9 +18,11 @@ import org.pf4j.CompoundPluginLoader
 import org.pf4j.DefaultPluginClasspath
 import org.pf4j.DefaultPluginManager
 import org.pf4j.DevelopmentPluginLoader
+import org.pf4j.JarPluginLoader
 import org.pf4j.PluginClassLoader
 import org.pf4j.PluginDescriptor
 import org.pf4j.PluginLoader
+import org.pf4j.util.FileUtils
 import java.nio.file.FileSystems
 import java.nio.file.Files
 import java.nio.file.Path
@@ -30,7 +33,7 @@ import java.nio.file.WatchKey
 class PluginService(
     private val configurationService: ConfigurationService,
     private val coroutineScope: CoroutineScope
-) {
+): PluginServiceInterface {
     private lateinit var pluginManager: DefaultPluginManager
     private var watchKey: WatchKey? = null
 
@@ -47,6 +50,8 @@ class PluginService(
             }
         }
 
+        configurationService.setPluginManager(this)
+
         pluginManager = HolonetPluginManager(pluginDirs)
         pluginManager.loadPlugins()
         pluginManager.startPlugins()
@@ -58,6 +63,12 @@ class PluginService(
         configurationService.cachedConfig.collect { config ->
             println("Configuration updated, reloading modules: $config")
             loadModules(config)
+        }
+    }
+
+    override suspend fun unloadPlugin(pluginIds: List<String>) {
+        pluginIds.forEach { pluginId ->
+            pluginManager.deletePlugin(pluginId)
         }
     }
 
@@ -124,18 +135,20 @@ class PluginService(
 private class HolonetPluginManager(pluginDirs: List<Path>) : DefaultPluginManager(pluginDirs) {
     override fun createPluginLoader(): PluginLoader {
         return CompoundPluginLoader()
-            .add(DevelopmentPluginLoader(this)) { this.isDevelopment }
-//            .add(JarPluginLoader(this)) { this.isNotDevelopment }
-            .add(CustomPluginLoader(this)) { this.isNotDevelopment }
+            .add(CustomJarPluginLoader(this)) { this.isNotDevelopment }
     }
 }
 
-private class CustomPluginLoader(holonetPluginManager: HolonetPluginManager) :
+private class CustomJarPluginLoader(holonetPluginManager: HolonetPluginManager) :
     BasePluginLoader(holonetPluginManager, DefaultPluginClasspath()) {
 
-    override fun isApplicable(pluginPath: Path): Boolean = super.isApplicable(pluginPath) && Files.isDirectory(pluginPath)
+    override fun isApplicable(pluginPath: Path): Boolean {
+        return super.isApplicable(pluginPath) && FileUtils.isJarFile(pluginPath)
+    }
 
     override fun createPluginClassLoader(pluginPath: Path?, pluginDescriptor: PluginDescriptor?): PluginClassLoader {
-        return PluginClassLoader(pluginManager, pluginDescriptor, javaClass.classLoader, ClassLoadingStrategy.ADP)
+        val pluginClassLoader = PluginClassLoader(pluginManager, pluginDescriptor, javaClass.classLoader, ClassLoadingStrategy.ADP)
+        pluginClassLoader.addFile(pluginPath?.toFile())
+        return pluginClassLoader
     }
 }
