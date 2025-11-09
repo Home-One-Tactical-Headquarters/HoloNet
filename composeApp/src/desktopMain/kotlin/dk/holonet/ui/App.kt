@@ -14,7 +14,7 @@ import org.koin.compose.viewmodel.koinViewModel
 @Composable
 fun App(
     viewModel: AppViewModel = koinViewModel(),
-    modifier: Modifier
+    modifier: Modifier = Modifier
 ) {
     val uiState by viewModel.state.collectAsStateWithLifecycle()
 
